@@ -5,7 +5,7 @@ const express = require('express');
 const { default: mongoose } = require('mongoose');
 const app = express();
 
-require('./database').init('playground');
+require('./database').init('vidly');
 
 require('./middleware').init(app);
 
