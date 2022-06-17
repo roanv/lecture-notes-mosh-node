@@ -4,7 +4,7 @@ const customers = require('./routes/customers');
 const express = require('express');
 const app = express();
 
-require('./database').init()('vidly');
+require('./database').init()('playground');
 
 require('./middleware').init(app);
 
