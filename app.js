@@ -7,7 +7,7 @@ const config = require('config');
 const logger = require('./middleware/logger')  // custom middleware
 const helmet = require('helmet'); 
 const morgan = require('morgan'); 
-
+const auth = require('./auth')
 
 const express = require('express');
 const app = express();
@@ -27,6 +27,7 @@ app.use(express.json()) // parsing json - creates json 'body' object on req
 app.use(express.static('public')); // serve static pages in public folder
 app.use(logger);
 app.use(helmet()); // header security
+app.use(auth);
 
 // console.log(process.env.NODE_ENV);
 // app.get('env') similar to process.env.NODE_ENV; returns development by default
