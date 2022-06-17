@@ -1,6 +1,10 @@
 const genres = require('./routes/genres');
 const customers = require('./routes/customers');
 const mongoose = require('mongoose'); 
+const startupDebugger = require('debug')('app:startup');
+const dbDebugger = require('debug')('app:db');
+const config = require('config');
+
 const express = require('express');
 const app = express();
 
@@ -8,12 +12,16 @@ const app = express();
 mongoose.connect('mongodb://localhost/vidly')  // db created the first time something is written to it
   .then(() => console.log('Connected to MongoDB...'))
   .catch(err => console.error('Could not connect to MongoDB...'));
-  
+
 //  mongo import from json cmd
 //  mongoimport --db database-name --collection collection-name --file C:/path/to/data.json --jsonArray
 
+// MIDDLEWARE
+app.use(express.json()) // parsing json - creates json 'body' object on req
+app.use(express.urlencoded({extended:true})); // parsing html form => json
+app.use(express.static('public')); // serve static pages in public folder
+
 // ROUTES
-app.use(express.json())
 app.get('/',(req, res) => {res.send('Vidly Home');})
 app.use('/api/customers',customers);
 app.use('/api/genres',genres);
