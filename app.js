@@ -10,6 +10,7 @@ mongoose.connect('mongodb://localhost/vidly')  // db created the first time some
   .catch(err => console.error('Could not connect to MongoDB...'));
 
 // ROUTES
+app.use(express.json())
 app.get('/',(req, res) => {res.send('Vidly Home');})
 app.use('/api/customers',customers);
 app.use('/api/genres',genres);
