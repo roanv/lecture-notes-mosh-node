@@ -1,20 +1,19 @@
-//const genres = require('./routes/genres');
-//const customers = require('./routes/customers');
+const { default: mongoose } = require('mongoose');
+const genres = require('./routes/genres');
+const customers = require('./routes/customers');
 
 const express = require('express');
-const { default: mongoose } = require('mongoose');
 const app = express();
 
-require('./database').init('vidly');
+mongoose.connect('mongodb://localhost/' + database)  // db created the first time something is written to it
+.then(() => console.log('Connected to MongoDB...'))
+.catch(err => console.error('Could not connect to MongoDB...'));
 
-require('./middleware').init(app);
-
-require('./templating').init(app);
+app.use(express.json())
 
 // ROUTES
 app.use('/api/customers',customers);
 app.use('/api/genres',genres);
-
 
 // START SERVER
 const PORT = process.env.PORT || 3000;
