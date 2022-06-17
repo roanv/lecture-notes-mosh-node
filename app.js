@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const startupDebugger = require('debug')('app:startup');
 const dbDebugger = require('debug')('app:db');
 const config = require('config');
+const logger = require('./middleware/logger')  // custom middleware
 
 const express = require('express');
 const app = express();
@@ -18,8 +19,10 @@ mongoose.connect('mongodb://localhost/vidly')  // db created the first time some
 
 // MIDDLEWARE
 app.use(express.json()) // parsing json - creates json 'body' object on req
-app.use(express.urlencoded({extended:true})); // parsing html form => json
+// below: parsing html form => json // key=value&key=value // sets body on json
+//app.use(express.urlencoded({extended:true})); 
 app.use(express.static('public')); // serve static pages in public folder
+app.use(logger);
 
 // ROUTES
 app.get('/',(req, res) => {res.send('Vidly Home');})
