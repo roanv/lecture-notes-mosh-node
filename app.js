@@ -21,6 +21,12 @@ const authorSchema = new mongoose.Schema({
     website: String
 });
 
+const tagSchema = new mongoose.Schema({
+    name: String,
+});
+
+const Tag = mongoose.model('Tag', tagSchema);
+
 const Author = mongoose.model('Author', authorSchema);
 
 const Course = mongoose.model('Course', new mongoose.Schema({
@@ -30,7 +36,7 @@ const Course = mongoose.model('Course', new mongoose.Schema({
         ref: 'Author' // referencing author document
     },
     authorEmbed: authorSchema,
-    author:{ // can also do validation
+    author:{ // can also do validation here on top of schema
         type: authorSchema, 
         required:false
         // to apply validation to specific property within sub-document pass in sub-doc schema to super-doc schema:
@@ -38,7 +44,8 @@ const Course = mongoose.model('Course', new mongoose.Schema({
         // country_code: { type: String, required: true },
         // userSchema = new Schema({
         // phone:phoneSchema
-    }
+    },
+    tags:[tagSchema] // sub array
 }))
 
 async function createAuthor(name,bio,website){
@@ -51,11 +58,12 @@ async function createAuthor(name,bio,website){
     console.log('CREATED AUTHOR\n' + result);
 }
 
-async function createCourse(name,authorRef,authorEmbed){
+async function createCourse(name,authorRef,authorEmbed,tags){
     const course = new Course({
         name,
         authorRef,
-        authorEmbed
+        authorEmbed,
+        tags
     });
     const result = await course.save();
     console.log('CREATED COURSE:\n' + result);
@@ -66,14 +74,18 @@ async function listCourses() {
       .find()
       .populate('authorRef','name -_id') // looks up author document by id // only shows name
       //.populate('category', 'name') // can chain multiple populate's
-      .select('name authorRef authorEmbed');
+      .select('name authorRef authorEmbed tags.name');
     console.log('LISTING COURSES:\n' + courses);
 }
 
-async function genSampleData(){
+async function example(){
     // CLEAR DB
     await Author.deleteMany({});
     await Course.deleteMany({});
+    //await Tag.deleteMany({});
+
+    // Tags
+    const tags = [new Tag({name:"JavaScript"}), new Tag({name:"Python"})];
 
     // Referenced Author
     await createAuthor('Mosh Referenced', 'Reference Author', 'My Referenced Website'); // only adds author id (reference) as property on course
@@ -83,16 +95,19 @@ async function genSampleData(){
     const embedAuthor = new Author({name:"Mosh Embedded"}); // document (embedded) to be added to course
 
     // Course
-    await createCourse('Node Course',refAuthor._id,embedAuthor);
-    
+    await createCourse('Node Course',refAuthor.id,embedAuthor, tags);
 
     // Update embedded
     const course = await Course.findOne({name:'Node Course'});
     course.authorEmbed.name = 'Mosh Hamedani'; // don't need to query before updating
+    const tag = new Tag({name:'C#'}) 
+    course.tags.push(tag); // adding to sub array
+    const removeTag = course.tags.id(tag.id);
+    removeTag.remove(); // removing a sub element // need ID - finding it is tricky
     await course.save();
 
     // Updating without querying and saving to memory
-    const noQueryCourseUpdate = await Course.updateOne({_id:course._id}, {
+    const noQueryCourseUpdate = await Course.updateOne({id:course.id}, {
         $set: {
             'authorEmbed.name':'Jane Doe'
         }
@@ -101,7 +116,7 @@ async function genSampleData(){
     listCourses();
 }
 
-genSampleData();
+example();
 
 // START SERVER
 const PORT = process.env.PORT || 3000;
