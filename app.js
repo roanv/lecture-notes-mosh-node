@@ -38,6 +38,13 @@ if (app.get('env') === 'development'){
     dbDebugger('connected to db');  // looks at process.env.DEBUG = app:db OR DEBUG=app:*
 }
 
+// CONFIGURATION
+console.log('Application Name: ' + config.get('name')); // looks at NODE_ENV
+console.log('Mail Server: ' + config.get('mail.host'));
+// console.log('Mail Password: ' + config.get('password')); // need to set $env:NODEPW_MOSH_EXPRESS="123"
+// console.log(process.env.NODEPW_MOSH_EXPRESS); 
+// to set env variable in powershell $env:NODEPW_MOSH_EXPRESS="123"
+// sets variable for that powershell session
 
 // ROUTES
 app.get('/',(req, res) => {res.send('Vidly Home');})
