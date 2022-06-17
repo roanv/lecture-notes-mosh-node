@@ -5,6 +5,7 @@ const startupDebugger = require('debug')('app:startup');
 const dbDebugger = require('debug')('app:db');
 const config = require('config');
 const logger = require('./middleware/logger')  // custom middleware
+const helmet = require('helmet'); 
 
 const express = require('express');
 const app = express();
@@ -23,6 +24,7 @@ app.use(express.json()) // parsing json - creates json 'body' object on req
 //app.use(express.urlencoded({extended:true})); 
 app.use(express.static('public')); // serve static pages in public folder
 app.use(logger);
+app.use(helmet()); // header security
 
 // ROUTES
 app.get('/',(req, res) => {res.send('Vidly Home');})
