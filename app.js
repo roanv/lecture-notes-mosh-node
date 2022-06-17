@@ -15,18 +15,21 @@ require('./database').init('playground');
 //app.use('/api/customers',customers);
 //app.use('/api/genres',genres);
 
-const Author = mongoose.model('Author', new mongoose.Schema({
+const authorSchema = new mongoose.Schema({
     name: String,
     bio: String,
     website: String
-}))
+});
+
+const Author = mongoose.model('Author', authorSchema);
 
 const Course = mongoose.model('Course', new mongoose.Schema({
     name:String,
-    author: { 
+    authorRef: {  // reference only
         type:mongoose.Schema.Types.ObjectId, 
         ref: 'Author' // referencing author document
-    }
+    },
+    authorEmbed: authorSchema
 }))
 
 async function createAuthor(name,bio,website){
@@ -36,32 +39,60 @@ async function createAuthor(name,bio,website){
         website
     });
     const result = await author.save();
-    console.log(result);
+    console.log('CREATED AUTHOR\n' + result);
 }
 
-async function createCourse(name,author){
+async function createCourse(name,authorRef,authorEmbed){
     const course = new Course({
         name,
-        author        
+        authorRef,
+        authorEmbed
     });
     const result = await course.save();
-    console.log(result);
+    console.log('CREATED COURSE:\n' + result);
 }
 
 async function listCourses() { 
     const courses = await Course
       .find()
-      .populate('author','name -_id') // looks up author document by id // only shows name
+      .populate('authorRef','name -_id') // looks up author document by id // only shows name
       //.populate('category', 'name') // can chain multiple populate's
-      .select('name author');
-    console.log(courses);
-  }
-  
-//createAuthor('Mosh', 'My bio', 'My Website');
+      .select('name authorRef authorEmbed');
+    console.log('LISTING COURSES:\n' + courses);
+}
 
-// createCourse('Node Course','62ac39d5b21b30c8af80ecb8');
+async function genSampleData(){
+    // CLEAR DB
+    await Author.deleteMany({});
+    await Course.deleteMany({});
 
-listCourses();
+    // Referenced Author
+    await createAuthor('Mosh Referenced', 'Reference Author', 'My Referenced Website'); // only adds author id (reference) as property on course
+    const refAuthor = await Author.findOne({name:'Mosh Referenced'}); // get id to add to course
+
+    // Embedded Author
+    const embedAuthor = new Author({name:"Mosh Embedded"}); // document (embedded) to be added to course
+
+    // Course
+    await createCourse('Node Course',refAuthor._id,embedAuthor);
+    
+
+    // Update embedded
+    const course = await Course.findOne({name:'Node Course'});
+    course.authorEmbed.name = 'Mosh Hamedani'; // don't need to query before updating
+    await course.save();
+
+    // Updating without querying and saving to memory
+    const noQueryCourseUpdate = await Course.updateOne({_id:course._id}, {
+        $set: {
+            'authorEmbed.name':'Jane Doe'
+        }
+    })
+
+    listCourses();
+}
+
+genSampleData();
 
 // START SERVER
 const PORT = process.env.PORT || 3000;
