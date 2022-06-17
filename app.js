@@ -29,7 +29,16 @@ const Course = mongoose.model('Course', new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId, 
         ref: 'Author' // referencing author document
     },
-    authorEmbed: authorSchema
+    authorEmbed: authorSchema,
+    author:{ // can also do validation
+        type: authorSchema, 
+        required:false
+        // to apply validation to specific property within sub-document pass in sub-doc schema to super-doc schema:
+        // phonesSchema = new Schema({
+        // country_code: { type: String, required: true },
+        // userSchema = new Schema({
+        // phones:[phonesSchema]
+    }
 }))
 
 async function createAuthor(name,bio,website){
