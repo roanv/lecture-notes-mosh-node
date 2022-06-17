@@ -3,8 +3,9 @@ const express = require('express');
 const router = express.Router();
 const {Customer, validate} = require('../models/customer'); 
 
-router.get('/', (req, res) => {
-    res.send('Customers API');
+router.get('/', async (req, res) => {
+  const customers = await Customer.find().sort('name');
+  res.send(customers);
 });
 
 router.post('/', async (req, res) => {
