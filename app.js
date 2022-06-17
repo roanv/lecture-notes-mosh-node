@@ -6,6 +6,8 @@ const dbDebugger = require('debug')('app:db');
 const config = require('config');
 const logger = require('./middleware/logger')  // custom middleware
 const helmet = require('helmet'); 
+const morgan = require('morgan'); 
+
 
 const express = require('express');
 const app = express();
@@ -25,6 +27,16 @@ app.use(express.json()) // parsing json - creates json 'body' object on req
 app.use(express.static('public')); // serve static pages in public folder
 app.use(logger);
 app.use(helmet()); // header security
+
+// console.log(process.env.NODE_ENV);
+// app.get('env') similar to process.env.NODE_ENV; returns development by default
+if (app.get('env') === 'development'){  
+    app.use(morgan('tiny')); // HTTP request logger 
+    //console.log('morgan enabled...');
+    startupDebugger('morgan enabled...'); // looks at process.env.DEBUG = app:startup
+    dbDebugger('connected to db');  // looks at process.env.DEBUG = app:db OR DEBUG=app:*
+}
+
 
 // ROUTES
 app.get('/',(req, res) => {res.send('Vidly Home');})
