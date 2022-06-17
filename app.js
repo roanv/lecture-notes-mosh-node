@@ -14,5 +14,6 @@ app.get('/',(req, res) => {res.send('Vidly Home');})
 app.use('/api/customers',customers);
 app.use('/api/genres',genres);
 
+// START SERVER
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Listening on port ${PORT}...`));
