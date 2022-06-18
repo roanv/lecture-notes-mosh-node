@@ -1,6 +1,7 @@
 const {Genre} = require('./genre');
 const {Customer} = require('./customer');
 const {Movie} = require('./movie');
+const {Rental} = require('./rental');
 
 const sampleCustomers = [
   new Customer({name:'Jane Doe', isGold:false, phone:'123456789'}),
@@ -35,10 +36,11 @@ const sampleMovies = [
   new Movie({title:'Rush Hour', genre: randGenre(), numberInStock:1, dailyRentalRate: 21})
 ]
 
+const sampleRentals = [];
+
 async function customers(){
     console.log('Generating sample customers...')    
     await sampleCustomers.map(async (customer) => {
-      //console.log(`Checking if ${customer.name} exists...`);
       const exists = await Customer.findOne({name:customer.name});
       if (exists) return;
       await customer.save();
@@ -46,32 +48,75 @@ async function customers(){
     console.log(`Sample customers done.`);
   }
 
-  async function genres(){
-    console.log('Generating sample genres...')    
-    await sampleGenres.map(async (genre) => {
-      const exists = await Genre.findOne({name:genre.name});
-      if (exists) return;
-      await genre.save();
-    });
-    console.log(`Sample genres done.`);
+async function genres(){
+  console.log('Generating sample genres...')    
+  await sampleGenres.map(async (genre) => {
+    const exists = await Genre.findOne({name:genre.name});
+    if (exists) return;
+    await genre.save();
+  });
+  console.log(`Sample genres done.`);
+}
+
+async function movies(){
+  console.log('Generating sample movies...')
+  await sampleMovies.map(async (movie) =>{
+    const exists = await Movie.findOne({title:movie.title});
+    if (exists) return;
+    await movie.save();
+  });
+  console.log(`Sample movies done.`);
+}
+
+async function rentals(){
+  console.log('Generating sample rentals...')
+
+  await Rental.deleteMany({});
+
+  for (let i = 0; i < 10; i++){
+    const rental = new Rental({
+      customer:randCustomer(),
+      movie:randMovie()
+    })    
+    sampleRentals.push(rental);
   }
 
-  async function movies(){
-    console.log('Generating sample movies...')
-    await sampleMovies.map(async (movie) =>{
-      const exists = await Movie.findOne({title:movie.title});
-      if (exists) return;
-      await movie.save();
+  await sampleRentals.map(async (rental) =>{
+    const exists = await Rental.findOne({
+      customer:{name:rental.customer.name},
+      movie:{title:rental.movie.title},
+      dateOut:rental.dateOut
     });
-    console.log(`Sample movies done.`);
-  }
+    if (exists) return;
+    await rental.save();
+  });
+  console.log(`Sample rentals done.`);
+}
 
-  function randGenre(){  
-    const rand = Math.floor(Math.random() * sampleGenres.length);
-    return sampleGenres[rand];
-  }
+function randGenre(){  
+  const rand = Math.floor(Math.random() * sampleGenres.length);
+  return sampleGenres[rand];
+}
+
+function randCustomer(){
+  const rand = Math.floor(Math.random() * sampleCustomers.length);
+  return sampleCustomers[rand];
+}
+
+function randMovie(){
+  const rand = Math.floor(Math.random() * sampleMovies.length);
+  return sampleMovies[rand];
+}
+
+function randDate(daysAgo){
+  const start = new Date();
+  start.setTime(Date.now - (1000 * 60 * 60 * 24 * daysAgo));
+  const end = new Date();
+  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+}
   
 
-  exports.customers = customers;
-  exports.genres = genres;
-  exports.movies = movies;
+exports.customers = customers;
+exports.genres = genres;
+exports.movies = movies;
+exports.rentals = rentals;

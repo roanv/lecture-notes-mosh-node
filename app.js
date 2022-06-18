@@ -2,6 +2,7 @@ const { default: mongoose } = require('mongoose');
 const genres = require('./routes/genres');
 const customers = require('./routes/customers');
 const movies = require('./routes/movies');
+const rentals = require('./routes/rentals');
 const sampleGen = require('./models/sampleDataGenerator');
 
 const express = require('express');
@@ -15,6 +16,7 @@ app.use(express.json())
 app.use('/api/customers',customers);
 app.use('/api/genres',genres);
 app.use('/api/movies',movies);
+app.use('/api/rentals',rentals)
 
 // START SERVER
 const PORT = process.env.PORT || 3000;
@@ -29,4 +31,5 @@ async function initDatabase(){
     sampleGen.customers();
     sampleGen.genres();
     sampleGen.movies();
+    sampleGen.rentals();
 }
