@@ -2,7 +2,7 @@ const { default: mongoose } = require('mongoose');
 const genres = require('./routes/genres');
 const customers = require('./routes/customers');
 const movies = require('./routes/movies');
-const sampleGen = require('./sampleDataGenerator');
+const sampleGen = require('./models/sampleDataGenerator');
 
 const express = require('express');
 const app = express();

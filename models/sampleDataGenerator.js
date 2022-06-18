@@ -1,6 +1,6 @@
-const {Genre} = require('./models/genre');
-const {Customer} = require('./models/customer');
-const {Movie} = require('./models/movie');
+const {Genre} = require('./genre');
+const {Customer} = require('./customer');
+const {Movie} = require('./movie');
 
 const sampleCustomers = [
   new Customer({name:'Jane Doe', isGold:false, phone:'123456789'}),
