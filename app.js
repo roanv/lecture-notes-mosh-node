@@ -2,18 +2,12 @@ const { default: mongoose } = require('mongoose');
 const genres = require('./routes/genres');
 const customers = require('./routes/customers');
 const movies = require('./routes/movies');
-
 const sampleGen = require('./sampleDataGenerator');
 
 const express = require('express');
 const app = express();
 
-mongoose.connect('mongodb://localhost/vidly')  // db created the first time something is written to it
-.then(() => console.log('Connected to MongoDB...'))
-.catch(err => console.error('Could not connect to MongoDB...'));
-
-sampleGen.customers();
-sampleGen.genres();
+initDatabase();
 
 app.use(express.json())
 
@@ -25,3 +19,14 @@ app.use('/api/movies',movies);
 // START SERVER
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Listening on port ${PORT}...`));
+
+
+async function initDatabase(){
+    await mongoose.connect('mongodb://localhost/vidly')  // db created the first time something is written to it
+    .then(() => console.log('Connected to MongoDB...'))
+    .catch(err => console.error('Could not connect to MongoDB...'));
+    
+    sampleGen.customers();
+    sampleGen.genres();
+    sampleGen.movies();
+}
