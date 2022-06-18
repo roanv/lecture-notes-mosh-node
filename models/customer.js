@@ -18,7 +18,7 @@ const Customer = mongoose.model('Customer', new mongoose.Schema({
       minlength: 5,
       maxlength: 50
     }
-  }));
+}));
 
 function validateCustomer(customer) {
     const schema = Joi.object({
