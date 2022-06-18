@@ -1,5 +1,5 @@
-const Genre = require('./models/genre');
-const Customer = require('./models/customer');
+const {Genre} = require('./models/genre');
+const {Customer} = require('./models/customer');
 
 async function customers(){
     console.log('Generating sample customers...')
