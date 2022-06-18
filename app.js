@@ -3,9 +3,7 @@ const genres = require('./routes/genres');
 const customers = require('./routes/customers');
 const movies = require('./routes/movies');
 
-
-const Genre = require('./models/genre');
-const Customer = require('./models/customer');
+const sampleGen = require('./sampleDataGenerator');
 
 const express = require('express');
 const app = express();
@@ -14,8 +12,8 @@ mongoose.connect('mongodb://localhost/vidly')  // db created the first time some
 .then(() => console.log('Connected to MongoDB...'))
 .catch(err => console.error('Could not connect to MongoDB...'));
 
-Genre.genSampleData();
-Customer.genSampleData();
+sampleGen.customers();
+sampleGen.genres();
 
 app.use(express.json())
 
