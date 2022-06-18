@@ -32,11 +32,11 @@ router.put('/:id', async (req, res) => {
 });
 
 router.delete('/:id', async (req, res) => {
-    const customer = await Customer.findByIdAndRemove(req.params.id);
+    const genre = await Genre.findByIdAndRemove(req.params.id);
   
-    if (!customer) return res.status(404).send('The customer with the given ID was not found.');
+    if (!genre) return res.status(404).send('The genre with the given ID was not found.');
   
-    res.send(customer);
+    res.send(genre);
 });
 
 router.get('/:id', async (req, res) => {
