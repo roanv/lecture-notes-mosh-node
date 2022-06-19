@@ -40,7 +40,7 @@ router.post('/', async (req, res) => {
   try {
     new Fawn.Task() // "transaction" complete both or nothing gets updated
       .save('rentals', rental)
-      .update('movies',{id:movie.id},{$inc:{numberInStock:-1}})
+      .update('movies',{_id:movie._id},{$inc:{numberInStock:-1}})
       //.remove()
       .run();
     res.send(rental);
