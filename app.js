@@ -4,6 +4,8 @@ const customers = require('./routes/customers');
 const movies = require('./routes/movies');
 const rentals = require('./routes/rentals');
 const sampleGen = require('./models/sampleDataGenerator');
+const Joi = require('joi');
+Joi.objectId = require('joi-objectid')(Joi);
 
 const express = require('express');
 const app = express();
