@@ -3,7 +3,10 @@ const {Movie} = require('../models/movie');
 const {Customer} = require('../models/customer'); 
 const mongoose = require('mongoose');
 const express = require('express');
+const Fawn = require('fawn');
 const router = express.Router();
+
+Fawn.init("mongodb://localhost/vidly");
 
 router.get('/', async (req, res) => {
   const rentals = await Rental.find().sort('-dateOut');
@@ -34,12 +37,18 @@ router.post('/', async (req, res) => {
       dailyRentalRate: movie.dailyRentalRate
     }
   });
-  rental = await rental.save();
-
-  movie.numberInStock--;
-  movie.save();
+  try {
+    new Fawn.Task() // "transaction" complete both or nothing gets updated
+      .save('rentals', rental)
+      .update('movies',{id:movie.id},{$inc:{numberInStock:-1}})
+      //.remove()
+      .run();
+    res.send(rental);
+  }
+  catch(ex) {
+    res.status(500).send('Something failed.');
+  }
   
-  res.send(rental);
 });
 
 router.get('/:id', async (req, res) => {
