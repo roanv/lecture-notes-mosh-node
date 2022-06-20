@@ -5,12 +5,14 @@ const router = express.Router();
 const {Genre, validate} = require('../models/genre');
 const errorCatcher = require('../middleware/errorCatcher');
 
-router.get('/', async (req,res) => {    
-    throw new Error('TEST ERROR could not get genres');
+router.get('/', async (req,res) => {
     const genres = await Genre.find().sort('name');
     res.send(genres);    
 });
 
+router.get('/error', async (req,res) => {
+    throw new Error('TEST ERROR could not get genres');
+});
 
 // HANDLING ERRORS MANUALLY
 // specific implementation - what would normally go directly in router
