@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
       minlength: 5,
       maxlength: 1024
     },
-  isAdmin:boolean
+  isAdmin:Boolean
 });
 
 userSchema.methods.generateAuthToken = function(){ // do not use => here as they do not update "this"
