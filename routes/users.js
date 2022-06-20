@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const {User, validate} = require('../models/user');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
+const config = require('config');
+const jwt = require('jsonwebtoken');
 
 // register
 router.post('/', async (req, res) => {
@@ -31,7 +33,13 @@ router.post('/', async (req, res) => {
 
     await user.save();
 
-    res.send(_.pick(user,['id','name','email'])); 
+    // generate auth token
+    const token = jwt.sign({id:user.id},config.get('jwtPrivateKey')); 
+
+    // send to client
+    res
+    .header('x-auth-token',token) // prefix custom headers with x-
+    .send(_.pick(user,['id','name','email'])); 
 });
 
 module.exports = router;
