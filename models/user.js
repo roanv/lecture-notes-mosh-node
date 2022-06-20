@@ -36,5 +36,5 @@ const userSchema = new mongoose.Schema({
     return schema.validate(user);
 }
 
-exports.User = user;
+exports.User = User;
 exports.validate = validateUser;
