@@ -16,7 +16,8 @@ function validate(req) {
 
     return schema.validate(req);
 }
-// register
+
+// login
 router.post('/', async (req, res) => {
 
     // check valid input
