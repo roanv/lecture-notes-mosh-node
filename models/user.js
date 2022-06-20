@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const Joi = require('joi');
 const e = require('express');
+const config = require('config');
+const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -22,7 +24,11 @@ const userSchema = new mongoose.Schema({
       minlength: 5,
       maxlength: 1024
     }
-})
+});
+
+userSchema.methods.generateAuthToken = function(){ // do not use => here as they do not update "this"
+  return jwt.sign({id:this.id},config.get('jwtPrivateKey')); // "this" refers to user object
+}
 
 const User = mongoose.model('User', userSchema);
 

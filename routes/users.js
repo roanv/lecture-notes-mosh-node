@@ -34,7 +34,7 @@ router.post('/', async (req, res) => {
     await user.save();
 
     // generate auth token
-    const token = jwt.sign({id:user.id},config.get('jwtPrivateKey')); 
+    const token = user.generateAuthToken();
 
     // send to client
     res
