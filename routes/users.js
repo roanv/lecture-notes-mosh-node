@@ -4,8 +4,6 @@ const mongoose = require('mongoose');
 const {User, validate} = require('../models/user');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
-const config = require('config');
-const jwt = require('jsonwebtoken');
 
 // register
 router.post('/', async (req, res) => {
