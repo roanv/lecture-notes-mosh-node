@@ -15,7 +15,7 @@ function validate(req) {
     return schema.validate(req);
 }
 
-// login
+// login 
 router.post('/', async (req, res) => {
 
     // check valid input
@@ -31,5 +31,7 @@ router.post('/', async (req, res) => {
 
     res.send(user.generateAuthToken());
 });
+
+// logout handled on client side - just delete the token
 
 module.exports = router;
