@@ -12,7 +12,7 @@ function validate(req) {
         password: Joi.string().min(5).max(1024).required()
     });
 
-    return schema.validate(user);
+    return schema.validate(req);
 }
 // register
 router.post('/', async (req, res) => {
