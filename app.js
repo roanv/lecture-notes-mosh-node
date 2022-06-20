@@ -15,6 +15,7 @@ const app = express();
 
 if (!config.get('jwtPrivateKey')){
     console.log('FATAL ERROR: jwtPrivateKey is not defined.');
+    // to set env variable key in powershell: $env:vidly_jwtPrivateKey="example key" 
     process.exit(1);
 }
 
