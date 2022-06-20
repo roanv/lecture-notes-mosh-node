@@ -3,10 +3,12 @@ const admin = require('../middleware/admin');
 const express = require('express');
 const router = express.Router();
 const {Genre, validate} = require('../models/genre');
+const errorCatcher = require('../middleware/errorCatcher');
 
-router.get('/', (req,res) => {
+router.get('/', async (req,res) => {    
+    throw new Error('TEST ERROR could not get genres');
     const genres = await Genre.find().sort('name');
-    res.send(genres);
+    res.send(genres);    
 });
 
 
