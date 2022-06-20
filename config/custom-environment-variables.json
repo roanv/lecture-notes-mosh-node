@@ -1,3 +1,4 @@
 {
-    "password":"NODEPW_MOSH_EXPRESS"
+    "password":"NODEPW_MOSH_EXPRESS",
+    "jwtPrivateKey":"VIDLY_jwtPrivateKey"
 }
