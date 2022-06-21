@@ -26,5 +26,8 @@
     "pug": "^3.0.2",
     "winston": "^3.7.2",
     "winston-mongodb": "^5.0.7"
+  },
+  "devDependencies": {
+    "jest": "^28.1.1"
   }
 }
