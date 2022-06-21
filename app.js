@@ -35,17 +35,19 @@ winston.add(new winston.transports.MongoDB({
 //     winston.error(ex.message, {metadata:ex});
 //     process.exit(1); // 0 means success // anything but 0 means failure
 // });
-// OR
+// process.on('unhandledRejection', (ex) => { // for promises
+//
+//     console.log('we got an uncaught rejection boys, take em away!');
+//     winston.error(ex.message, {metadata:ex});
+//     process.exit(1);
+// });
+
+// OR preferably :
 winston.exceptions.handle(new winston.transports.File({filename:'./logs/uncaughtExceptions.log'}));
-//throw new error('winston uncaught exception handling');
-
-process.on('unhandledRejection', (ex) => {
-    console.log('we got an uncaught rejection boys, take em away!');
-    winston.error(ex.message, {metadata:ex});
-    process.exit(1);
-});
-
-
+const logger = winston.createLogger();
+logger.rejections.handle(new winston.transports.File({filename:'./logs/uncaughtRejections.log'}));
+// this crashes for some reason:
+// winston.rejections.handle(new winston.transports.File({filename:'./logs/uncaughtRejections.log'}));
 
 if (!config.get('jwtPrivateKey')){
     console.log('FATAL ERROR: jwtPrivateKey is not defined.');
