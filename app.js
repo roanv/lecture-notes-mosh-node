@@ -30,9 +30,17 @@ winston.add(new winston.transports.MongoDB({
 // to catch and log node process errors:
 
 process.on('uncaughtException', (ex) => {
+    // this only works with synchronous code and rejected promises will not trigger this
     console.log('we got an uncaught exception boys, take em away!');
     winston.error(ex.message, {metadata:ex});
 });
+
+process.on('unhandledRejection', (ex) => {
+    console.log('we got an uncaught rejection boys, take em away!');
+    winston.error(ex.message, {metadata:ex});
+});
+
+
 
 if (!config.get('jwtPrivateKey')){
     console.log('FATAL ERROR: jwtPrivateKey is not defined.');
