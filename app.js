@@ -29,15 +29,20 @@ winston.add(new winston.transports.MongoDB({
 // throw new error('error'); // here will not be logged
 // to catch and log node process errors:
 
-process.on('uncaughtException', (ex) => {
-    // this only works with synchronous code and rejected promises will not trigger this
-    console.log('we got an uncaught exception boys, take em away!');
-    winston.error(ex.message, {metadata:ex});
-});
+// process.on('uncaughtException', (ex) => {
+//     // this only works with synchronous code and rejected promises will not trigger this
+//     console.log('we got an uncaught exception boys, take em away!');
+//     winston.error(ex.message, {metadata:ex});
+//     process.exit(1); // 0 means success // anything but 0 means failure
+// });
+// OR
+winston.exceptions.handle(new winston.transports.File({filename:'./logs/uncaughtExceptions.log'}));
+//throw new error('winston uncaught exception handling');
 
 process.on('unhandledRejection', (ex) => {
     console.log('we got an uncaught rejection boys, take em away!');
     winston.error(ex.message, {metadata:ex});
+    process.exit(1);
 });
 
 
