@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Joi = require('joi');
-const e = require('express');
 
 const genreSchema = new mongoose.Schema({
   name: {
@@ -17,7 +16,6 @@ function validateGenre(genre) {
     const schema = Joi.object({
         name: Joi.string().min(5).max(50).required()
     });
-
     return schema.validate(genre);
 }
 
