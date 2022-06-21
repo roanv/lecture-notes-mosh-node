@@ -1,8 +1,7 @@
 require('express-async-errors');
 
-const { default: mongoose } = require('mongoose');
 const config = require('config');
-const winston = require('winston'); // logging errors
+const winston = require('winston');
 require('winston-mongodb');
 const sampleGen = require('./models/sampleDataGenerator');
 const Joi = require('joi');
@@ -11,7 +10,7 @@ Joi.objectId = require('joi-objectid')(Joi);
 const express = require('express');
 const app = express();
 require('./startup/routes')(app);
-initDatabase();
+require('./startup/db')();
 
 // Error Logging in Express
 winston.add(new winston.transports.File({filename:'./logs/application.log'}));
@@ -54,15 +53,3 @@ if (!config.get('jwtPrivateKey')){
 // START SERVER
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Listening on port ${PORT}...`));
-
-
-async function initDatabase(){
-    await mongoose.connect('mongodb://localhost/vidly')  // db created the first time something is written to it
-    .then(() => console.log('Connected to MongoDB...'))
-    .catch(err => console.error('Could not connect to MongoDB...'));
-    
-    sampleGen.customers();
-    sampleGen.genres();
-    sampleGen.movies();
-    sampleGen.rentals();
-}
