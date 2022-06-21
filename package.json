@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "testing": "jest --watchAll"
   },
   "author": "",
   "license": "ISC",
