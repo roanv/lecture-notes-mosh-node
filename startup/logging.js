@@ -5,6 +5,7 @@ require('express-async-errors');
 module.exports = function(){
         // Error Logging in Express
     winston.add(new winston.transports.File({filename:'./logs/application.log'}));
+    winston.add(new winston.transports.Console({colorize:true,prettyPrint:true}));
     winston.add(new winston.transports.MongoDB({
         db:'mongodb://localhost/vidly',
         level: 'error'
@@ -31,13 +32,11 @@ module.exports = function(){
     // OR preferably :
     winston.exceptions.handle(
         new winston.transports.Console({colorize:true,prettyPrint:true}),
-        new winston.transports.File({filename:'./logs/uncaughtExceptions.log'})
-    );
+        new winston.transports.File({filename:'./logs/uncaughtExceptions.log'}));
     const logger = winston.createLogger();
     logger.rejections.handle(
         new winston.transports.Console({colorize:true,prettyPrint:true}),
-        new winston.transports.File({filename:'./logs/uncaughtRejections.log'})
-        );
+        new winston.transports.File({filename:'./logs/uncaughtRejections.log'}));
     // this crashes for some reason:
     // winston.rejections.handle(new winston.transports.File({filename:'./logs/uncaughtRejections.log'}));
 }
