@@ -17,11 +17,22 @@ Joi.objectId = require('joi-objectid')(Joi);
 const express = require('express');
 const app = express();
 
+// Error Logging in Express
 winston.add(new winston.transports.File({filename:'./logs/application.log'}));
 winston.add(new winston.transports.MongoDB({
     db:'mongodb://localhost/vidly',
     level: 'error'
 }));
+
+// winston only logs errors that are a part of req processing pipeline in express
+// it will not log errors outside of this context e.g.
+// throw new error('error); // here will not be logged
+// to log node process errors in winston:
+
+process.on('uncaughtException', (ex) => {
+    console.log('we got an uncaught exception boys, take em away!');
+    winston.error(ex.message, {metadata:ex});
+});
 
 if (!config.get('jwtPrivateKey')){
     console.log('FATAL ERROR: jwtPrivateKey is not defined.');
