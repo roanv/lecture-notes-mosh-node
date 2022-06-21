@@ -29,9 +29,15 @@ module.exports = function(){
     // });
 
     // OR preferably :
-    winston.exceptions.handle(new winston.transports.File({filename:'./logs/uncaughtExceptions.log'}));
+    winston.exceptions.handle(
+        new winston.transports.Console({colorize:true,prettyPrint:true}),
+        new winston.transports.File({filename:'./logs/uncaughtExceptions.log'})
+    );
     const logger = winston.createLogger();
-    logger.rejections.handle(new winston.transports.File({filename:'./logs/uncaughtRejections.log'}));
+    logger.rejections.handle(
+        new winston.transports.Console({colorize:true,prettyPrint:true}),
+        new winston.transports.File({filename:'./logs/uncaughtRejections.log'})
+        );
     // this crashes for some reason:
     // winston.rejections.handle(new winston.transports.File({filename:'./logs/uncaughtRejections.log'}));
 }
