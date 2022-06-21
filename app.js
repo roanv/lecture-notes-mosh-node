@@ -1,21 +1,17 @@
 require('express-async-errors');
+
 const { default: mongoose } = require('mongoose');
 const config = require('config');
 const winston = require('winston'); // logging errors
 require('winston-mongodb');
-const genres = require('./routes/genres');
-const customers = require('./routes/customers');
-const movies = require('./routes/movies');
-const rentals = require('./routes/rentals');
-const users = require('./routes/users');
-const auth = require('./routes/auth');
-const error = require('./middleware/error');
 const sampleGen = require('./models/sampleDataGenerator');
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 
 const express = require('express');
 const app = express();
+require('./startup/routes')(app);
+initDatabase();
 
 // Error Logging in Express
 winston.add(new winston.transports.File({filename:'./logs/application.log'}));
@@ -54,19 +50,6 @@ if (!config.get('jwtPrivateKey')){
     // to set env variable key in powershell: $env:vidly_jwtPrivateKey="example key" 
     process.exit(1);
 }
-
-initDatabase();
-
-app.use(express.json())
-
-// ROUTES
-app.use('/api/customers',customers);
-app.use('/api/genres',genres);
-app.use('/api/movies',movies);
-app.use('/api/rentals',rentals);
-app.use('/api/users', users);
-app.use('/api/auth',auth);
-app.use(error); // exceptions need to be AFTER other middleware
 
 // START SERVER
 const PORT = process.env.PORT || 3000;
