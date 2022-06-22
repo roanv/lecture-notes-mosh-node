@@ -41,17 +41,11 @@ describe('/api/returns', () =>{
         await Rental.deleteMany({});
     });     
 
-    it('should return the valid baseline rental', async () => {
-        const result = await Rental.findOne({id:rental.id});
-        expect(result).not.toBeNull();
-        expect(result.id).toBe(rental.id);
-    });
-
     // POST /api/returns {customerId, movieId}    
     describe('POST /', ()=>{         
         
         it ('should return 401 if client is not logged in', async()=>{
-            token = null;
+            token = '';
             const res = await send();
             expect(res.status).toBe(401);
         });
@@ -59,30 +53,36 @@ describe('/api/returns', () =>{
             payload.customerId = null;
             const res = await send();
             expect(res.status).toBe(400);
-        })
+        });
         it ('should return 400 if movieId is not provided', async() => {
             payload.movieId = null;
             const res = await send();
             expect(res.status).toBe(400);
-        })
+        });
         it ('should return 404 if rental not found for this customer', async() => {
             await Rental.deleteMany({});
             const res = await send();
             expect(res.status).toBe(404);
-        })
+        });
         it ('should return 400 if rental already processed', async() => {
             rental.dateReturned = new Date();
             await rental.save();
             const res = await send();
             expect(res.status).toBe(400);
-        })
-        // 
-        // 
-        // 
-        // Return 400 if rental already processed  
+        });
+        it ('should return 200 if valid request', async() => {
+            const res = await send();
+            expect(res.status).toBe(200);
+        });
+        it ('should set return date', async() => {
+            await send();
+            const result = await Rental.findOne({id:rental.id});
+            expect(result).toBeDefined();
+            expect(result.dateReturned).toBeDefined();
+            const diff = new Date() - result.dateReturned;
+            expect(diff).toBeLessThan(10*1000);
+        });
         
-        // Return 200 if valid request
-        // Set return date
         // Calculate rental fee
         // Increase the stock
         // Return the rental
