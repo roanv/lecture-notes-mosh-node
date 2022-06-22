@@ -5,11 +5,9 @@ const {Movie} = require('../models/movie');
 const auth = require('../middleware/auth');
 const moment = require('moment');
 const Joi = require('joi');
+const validate = require('../middleware/validate');
 
-router.post('/',auth, async (req,res) => {
-    const { error } = validateReturn(req.body); 
-    if (error) return res.status(400).send(error.details[0].message);
-
+router.post('/',[auth, validate(validateReturn)], async (req,res) => {
     const rental = await Rental.findOne({
         customerId:req.body.customerId,
         movieId:req.body.movieId
