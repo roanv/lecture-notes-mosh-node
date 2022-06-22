@@ -2,15 +2,13 @@ const request = require('supertest');
 const {Genre} = require('../../models/genre');
 const {User} = require('../../models/user');
 const mongoose = require('mongoose');
-const server = require('../../app');
+const server = require('../../server');
 
 describe('/api/genres', () => {
-    beforeEach(async ()=>{ 
-        await Genre.deleteMany({});
-    }); 
-    afterEach(async ()=>{
-        await Genre.deleteMany({});
-    });
+  afterAll(async () => {server.close();});
+
+    beforeEach(async ()=>{await Genre.deleteMany({});}); 
+    afterEach(async ()=>{await Genre.deleteMany({});});
 
     describe('GET /', () => {
         it('should return all genres', async () => {
@@ -188,5 +186,3 @@ describe('/api/genres', () => {
       });  
     
 });
-
-server.close()

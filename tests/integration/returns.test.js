@@ -1,14 +1,12 @@
 const {Rental} = require('../../models/rental');
 const mongoose = require('mongoose');
-server = require('../../app');
-
+const server = require('../../server');
 
 describe('/api/returns', () =>{
-    let server;
     let customerId;
     let movieId;
     let rental;
-
+    afterAll(async () => {server.close();});
 
     beforeEach( async() => {
         customerId = new mongoose.Types.ObjectId()
@@ -33,26 +31,33 @@ describe('/api/returns', () =>{
         await Rental.deleteMany({});
     });
 
-    it('should work', async () => {
+     
+
+    it('should return the valid baseline test rental', async () => {
         const result = await Rental.findOne({id:rental.id});
         expect(result).not.toBeNull();
         expect(result.id).toBe(rental.id);
     });
 
     // POST /api/returns {customerId, movieId}    
+    describe('POST /', ()=>{
+        // Return 401 if client is not logged in
+        // it ('should return 401 if client is not logged in'), async()=>{
+            
+        // }
+        // Return 400 if customerId is not provided
+        // Return 400 if movieId is not provided
+        // Return 404 if not rental is found for this customer
+        // Return 400 if rental already processed  
+        
+        // Return 200 if valid request
+        // Set return date
+        // Calculate rental fee
+        // Increase the stock
+        // Return the rental
+    });
 
-    // Return 401 if client is not logged in
-    // Return 400 if customerId is not provided
-    // Return 400 if movieId is not provided
-    // Return 404 if not rental is found for this customer
-    // Return 400 if rental already processed  
     
-    // Return 200 if valid request
-    // Set return date
-    // Calculate rental fee
-    // Increase the stock
-    // Return the rental
 
 });
 
-server.close();
