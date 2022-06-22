@@ -13,15 +13,13 @@ router.post('/',[auth, validate(validateReturn)], async (req,res) => {
     if(!rental) return res.status(404).send('Rental not found.');
     if (rental.dateReturned) return res.status(400).send('Rental already processed');
 
-    rental.dateReturned = new Date();
-
-    const days = moment.duration(rental.dateReturned - rental.dateOut, 'milliseconds').days();
-    rental.rentalFee = rental.movie.dailyRentalRate * days;    
+    rental.return();
+    await rental.save();
 
     const movie = await Movie.findOne({id:rental.movie.movieId});
     movie.numberInStock += 1;
 
-    await rental.save();
+    
     await movie.save();
     
     res.status(200).send(rental);
