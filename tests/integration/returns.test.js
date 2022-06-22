@@ -1,16 +1,21 @@
 const {Rental} = require('../../models/rental');
+const {User} = require('../../models/user');
 const mongoose = require('mongoose');
+const request = require('supertest');
 const server = require('../../server');
 
 describe('/api/returns', () =>{
     let customerId;
     let movieId;
     let rental;
+    let token; 
+
     afterAll(async () => {server.close();});
 
     beforeEach( async() => {
         customerId = new mongoose.Types.ObjectId()
         movieId = new mongoose.Types.ObjectId()
+        token = new User().generateAuthToken();      
         
         rental = new Rental({
             customer:{
@@ -40,11 +45,19 @@ describe('/api/returns', () =>{
     });
 
     // POST /api/returns {customerId, movieId}    
-    describe('POST /', ()=>{
-        // Return 401 if client is not logged in
-        // it ('should return 401 if client is not logged in'), async()=>{
-            
-        // }
+    describe('POST /', ()=>{    
+        const exec = async () => {
+          return await request(server)
+            .post('/api/returns')
+            .set('x-auth-token', token)
+            .send({customerId,movieId}) // send valid data
+        }
+        
+        it ('should return 401 if client is not logged in', async()=>{
+            token = '';
+            const res = await exec();
+            expect(res.status).toBe(401);
+        });
         // Return 400 if customerId is not provided
         // Return 400 if movieId is not provided
         // Return 404 if not rental is found for this customer
