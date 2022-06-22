@@ -108,8 +108,13 @@ describe('/api/returns', () =>{
             expect(dbMovie.numberInStock).toBe(movie.numberInStock+1);
         });
         it ('should return the rental', async() => {
-            const res = await send();            
+            const res = await send();
             expect(res.body._id).toBe(rental.id);
+            expect(res.body).toHaveProperty('dateOut');
+            expect(res.body).toHaveProperty('dateReturned');
+            expect(res.body).toHaveProperty('rentalFee');
+            expect(res.body).toHaveProperty('customer');
+            expect(res.body).toHaveProperty('movie');
         });
     });
 
