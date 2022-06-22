@@ -98,14 +98,12 @@ describe('/api/genres', () => {
           await exec();
     
           const genre = await Genre.findOne({ name });
-          console.log(genre);
           expect(genre).toHaveProperty("_id");
           expect(genre.name).toBe(name);
         });
     
         it('should return the genre if it is valid', async () => {
           const res = await exec();
-          console.log(res.body);
           expect(res.body).toHaveProperty("_id");
           expect(res.body.name).toBe(name);
         });
