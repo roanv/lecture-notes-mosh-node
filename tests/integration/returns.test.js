@@ -5,16 +5,20 @@ const request = require('supertest');
 const server = require('../../server');
 
 describe('/api/returns', () =>{
-    let customerId;
-    let movieId;
+    let payload = {};
     let rental;
     let token; 
 
-    afterAll(async () => {server.close();});
-
+    const send = async () => {
+        return await request(server)
+          .post('/api/returns')
+          .set('x-auth-token', token)
+          .send(payload) // send valid data
+    }
+    
     beforeEach( async() => {
-        customerId = new mongoose.Types.ObjectId()
-        movieId = new mongoose.Types.ObjectId()
+        const customerId = new mongoose.Types.ObjectId();
+        const movieId = new mongoose.Types.ObjectId();
         token = new User().generateAuthToken();      
         
         rental = new Rental({
@@ -30,37 +34,51 @@ describe('/api/returns', () =>{
             }            
         });
         await rental.save();
+        payload = {customerId,movieId};
     });
-    afterEach(async () => {
-        
+    
+    afterEach(async () => {        
         await Rental.deleteMany({});
-    });
+    });     
 
-     
-
-    it('should return the valid baseline test rental', async () => {
+    it('should return the valid baseline rental', async () => {
         const result = await Rental.findOne({id:rental.id});
         expect(result).not.toBeNull();
         expect(result.id).toBe(rental.id);
     });
 
     // POST /api/returns {customerId, movieId}    
-    describe('POST /', ()=>{    
-        const exec = async () => {
-          return await request(server)
-            .post('/api/returns')
-            .set('x-auth-token', token)
-            .send({customerId,movieId}) // send valid data
-        }
+    describe('POST /', ()=>{         
         
         it ('should return 401 if client is not logged in', async()=>{
-            token = '';
-            const res = await exec();
+            token = null;
+            const res = await send();
             expect(res.status).toBe(401);
         });
-        // Return 400 if customerId is not provided
-        // Return 400 if movieId is not provided
-        // Return 404 if not rental is found for this customer
+        it ('should return 400 if customerId is not provided', async() => {
+            payload.customerId = null;
+            const res = await send();
+            expect(res.status).toBe(400);
+        })
+        it ('should return 400 if movieId is not provided', async() => {
+            payload.movieId = null;
+            const res = await send();
+            expect(res.status).toBe(400);
+        })
+        it ('should return 404 if rental not found for this customer', async() => {
+            await Rental.deleteMany({});
+            const res = await send();
+            expect(res.status).toBe(404);
+        })
+        it ('should return 400 if rental already processed', async() => {
+            rental.dateReturned = new Date();
+            await rental.save();
+            const res = await send();
+            expect(res.status).toBe(400);
+        })
+        // 
+        // 
+        // 
         // Return 400 if rental already processed  
         
         // Return 200 if valid request
@@ -71,6 +89,6 @@ describe('/api/returns', () =>{
     });
 
     
-
+    afterAll(async () => {server.close();});
 });
 
