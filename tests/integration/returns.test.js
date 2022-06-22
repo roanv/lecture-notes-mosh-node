@@ -1,13 +1,16 @@
 const {Rental} = require('../../models/rental');
 const {User} = require('../../models/user');
+const {Movie} = require('../../models/movie');
 const mongoose = require('mongoose');
 const request = require('supertest');
+const moment = require('moment');
 const server = require('../../server');
 
 describe('/api/returns', () =>{
     let payload = {};
     let rental;
     let token; 
+    let movie;
 
     const send = async () => {
         return await request(server)
@@ -19,7 +22,17 @@ describe('/api/returns', () =>{
     beforeEach( async() => {
         const customerId = new mongoose.Types.ObjectId();
         const movieId = new mongoose.Types.ObjectId();
-        token = new User().generateAuthToken();      
+        token = new User().generateAuthToken(); 
+        
+        movie = new Movie({
+            id: movieId,
+            title: 'movie',
+            dailyRentalRate: 2,
+            genre:{name:'genre'},
+            numberInStock: 10
+        });
+
+        await movie.save();
         
         rental = new Rental({
             customer:{
@@ -39,6 +52,7 @@ describe('/api/returns', () =>{
     
     afterEach(async () => {        
         await Rental.deleteMany({});
+        await Movie.deleteMany({});
     });     
 
     // POST /api/returns {customerId, movieId}    
@@ -76,16 +90,27 @@ describe('/api/returns', () =>{
         });
         it ('should set return date', async() => {
             await send();
-            const result = await Rental.findOne({id:rental.id});
-            expect(result).toBeDefined();
-            expect(result.dateReturned).toBeDefined();
-            const diff = new Date() - result.dateReturned;
-            expect(diff).toBeLessThan(10*1000);
+            const dbRental = await Rental.findOne({id:rental.id});
+            const diff = new Date() - dbRental.dateReturned;
+            expect(diff).toBeLessThan(moment.duration(10,'seconds').asMilliseconds());
         });
-        
-        // Calculate rental fee
-        // Increase the stock
-        // Return the rental
+
+        it ('should set rental fee', async() => {
+            rental.dateOut = moment().add(-7,'days').toDate();            
+            await rental.save();
+            await send();
+            const dbRental = await Rental.findOne({id:rental.id});
+            expect(dbRental.rentalFee).toBe(14);
+        });
+        it ('should increase stock for movie', async() => {
+            await send();            
+            const dbMovie = await Movie.findOne({id:movie.id});
+            expect(dbMovie.numberInStock).toBe(movie.numberInStock+1);
+        });
+        it ('should return the rental', async() => {
+            const res = await send();            
+            expect(res.body._id).toBe(rental.id);
+        });
     });
 
     
